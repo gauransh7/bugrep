@@ -44,6 +44,8 @@ INSTALLED_APPS = [
     'oauth2_provider',
 ]
 
+AUTH_USER_MODEL = 'backend.User'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -133,9 +135,8 @@ DJRICHTEXTFIELD_CONFIG = {
     'js': ['//tinymce.cachefly.net/4.1/tinymce.min.js'],
     'init_template': 'djrichtextfield/init/tinymce.js',
     'settings': {
-        'menubar': False,
+        'menubar': True,
         'plugins': 'link image',
-        'toolbar': 'bold italic | link image | removeformat',
         'width': 700
     }
 }
@@ -148,4 +149,4 @@ REST_FRAMEWORK = {
 }
 
 
-AUTH_USER_MODEL = 'backend.User'
+

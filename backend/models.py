@@ -40,17 +40,13 @@ class Issue(models.Model):
     by_user = models.ForeignKey(User, related_name='by_user', on_delete=models.SET_NULL, null=True)
     heading = models.CharField(max_length=100)
     description = RichTextField(blank=True, null=True)
+    media = models.FileField(upload_to='./issue_media', null=True)
     tags = TaggableManager()
     date = models.DateTimeField(auto_now_add=True)
     status = models.BooleanField(default=True)
 
     def __str__(self):
         return self.heading
-
-
-class Media(models.Model):
-    issue = models.ForeignKey(Issue, on_delete=models.CASCADE)
-    media = models.FileField(upload_to='./issue_media', null=True)
 
 
 class Comment(models.Model):

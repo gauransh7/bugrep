@@ -1,4 +1,3 @@
-from .models import User
 from django.contrib.auth.admin import UserAdmin as DjangoUserAdmin
 from django.contrib import admin
 from . import models
@@ -27,8 +26,7 @@ class UserAdmin(DjangoUserAdmin):
     ordering = ('email',)
 
 
-admin.site.register(User, UserAdmin)
+admin.site.register(models.User, UserAdmin)
 admin.site.register(models.Project)
 admin.site.register(models.Issue)
 admin.site.register(models.Comment)
-admin.site.register(models.Media)

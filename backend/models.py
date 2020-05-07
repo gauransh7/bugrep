@@ -10,7 +10,7 @@ from django.utils.translation import ugettext_lazy as _
 class User(AbstractUser):
     username = None
     email = models.EmailField(_('email address'), unique=True)
-    profile = models.FilePathField()
+    profile = models.ImageField(upload_to='./issue_media', null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -40,7 +40,7 @@ class Issue(models.Model):
     by_user = models.ForeignKey(User, related_name='by_user', on_delete=models.SET_NULL, null=True)
     heading = models.CharField(max_length=100)
     description = RichTextField(blank=True, null=True)
-    media = models.FileField(upload_to='./issue_media', null=True)
+    media = models.FileField(upload_to='./issue_media', null=True, blank=True)
     tags = TaggableManager()
     date = models.DateTimeField(auto_now_add=True)
     status = models.BooleanField(default=True)
@@ -56,5 +56,5 @@ class Comment(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(User, related_name='liked_user')
 
-    def __str__(self):
-        return self.description
+    def __str__(self):  # pylint: disable=invalid-str-returned
+        return self.description  

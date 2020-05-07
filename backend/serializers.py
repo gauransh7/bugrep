@@ -1,21 +1,27 @@
-from rest_framework import serializers
-from . import models
+from rest_framework.serializers import ModelSerializer
+from backend.models import User, Project, Issue, Comment
 
 
-class UserSerializer(serializers.ModelSerializer):
+class UserSerializer(ModelSerializer):
     class Meta:
-        model = models.User
+        model = User
+        # fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'profile']
         fields = '__all__'
 
 
-class ProjectSerializer(serializers.ModelSerializer):
+class ProjectSerializer(ModelSerializer):
     class Meta:
-        model = models.Project
+        model = Project
         fields = '__all__'
 
 
-
-class IssueSerializer(serializers.ModelSerializer):
+class IssueSerializer(ModelSerializer):
     class Meta:
-        model = models.Issue
+        model = Issue
+        fields = '__all__'
+
+
+class CommentSerilizer(ModelSerializer):
+    class Meta:
+        model = Comment
         fields = '__all__'

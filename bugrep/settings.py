@@ -42,6 +42,9 @@ INSTALLED_APPS = [
     'djrichtextfield',
     'taggit',
     'oauth2_provider',
+    'rest_framework_swagger',
+    'coreapi',
+    'channels',
 ]
 
 AUTH_USER_MODEL = 'backend.User'
@@ -75,7 +78,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'bugrep.wsgi.application'
-
+ASGI_APPLICATION = "bugrep.routing.application"
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
@@ -145,8 +148,8 @@ DJRICHTEXTFIELD_CONFIG = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-    )
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
-
-
-

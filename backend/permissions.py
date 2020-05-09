@@ -14,4 +14,3 @@ class IsOwnerAdminorReadOnly(permissions.BasePermission):
             user = obj.user
 
         return request.user == user
-

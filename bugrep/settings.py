@@ -44,7 +44,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'rest_framework_swagger',
     'coreapi',
-    'channels',
+    # 'channels',
 ]
 
 AUTH_USER_MODEL = 'backend.User'

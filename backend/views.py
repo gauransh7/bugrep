@@ -1,12 +1,19 @@
 from . import models, serializers
 from rest_framework import viewsets
+from rest_framework.permissions import AllowAny
 from .permissions import IsOwnerAdminorReadOnly
+import requests
+from django.http import HttpResponse, JsonResponse
+import json
+from .models import User
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
 
-# Create your views here.
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
+    # permission_classes = [AllowAny]
 
 
 class ProjectViewSet(viewsets.ModelViewSet):
@@ -46,3 +53,46 @@ class CommentViewSet(viewsets.ModelViewSet):
     queryset = models.Comment.objects.all()
     serializer_class = serializers.CommentSerilizer
     permission_classes = [IsOwnerAdminorReadOnly]
+
+
+def get_user_data(request):
+    code = request.GET.get('code')
+    token_data = {
+        "client_id": "X3OuYZR7Gnmy6o3tiAhpIAmVI1fUdSjgSDXiS6q0",
+        "client_secret": "v09gzijJXOGEDiKj7KPi8oVKCVLBCstW5aOoiZSLtedug5htBbD364nCyEYekWewnC8ba2msQ3uY9TB0mJMcl84gSovkWKzyBqeqxh0dzCrRI9u8yCoXaA1bRHN6gFuU",
+        "grant_type": "authorization_code",
+        "redirect_url": "http://127.0.0.1:8000/backend/oauth_user_data/",
+        "code": code
+    }
+    response = requests.post(
+        'https://internet.channeli.in/open_auth/token/', data=token_data).json()
+    access_token = response['access_token']
+    user_data = requests.get('https://internet.channeli.in/open_auth/get_user_data/',
+                             headers={'Authorization': 'Bearer ' + access_token}).json()
+    try:
+        role = user_data['person']['roles'][1]['role']
+        # status = user_data['person']['roles'][1]['activeStatus']
+        email = user_data['contactInformation']['instituteWebmailAddress']
+        try:
+            user = User.objects.get(email=email)
+            status = 'old'
+            # return HttpResponse("<h1>Already There</h1>")
+        except:
+            name = user_data['person']['fullName'].split(" ", 1)
+            first_name = name[0]
+            last_name = name[1]
+            image = user_data['person']['displayPicture']
+            user = User(email=email, first_name=first_name, last_name=last_name, profile=image)
+            user.save()
+            status = 'new'
+            # return HttpResponse("<h1>Saved Successfully</h1>")
+        token, created = Token.objects.get_or_create(user=user)
+        return JsonResponse({
+            'token': token.key,
+            'user_id': user.pk,
+            'email': user.email,
+            'status': status
+        })
+    except IndexError:
+        return HttpResponse("<h1>You don't have access, Go Away!!</h1>")
+    

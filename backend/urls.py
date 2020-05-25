@@ -8,7 +8,6 @@ from rest_framework_swagger.views import get_swagger_view
 schema_view = get_swagger_view(title='Backend API')
 
 
-
 router = routers.SimpleRouter()
 router = DefaultRouter()
 router.register(r'users', views.UserViewSet)
@@ -38,6 +37,7 @@ urlpatterns = [
     path('', include(issues_router.urls)),
     path('', include(assigned_users_router.urls)),
     path('', include(reported_users_router.urls)),
+    path('oauth_redirect/', views.get_user_data),
     path(r'docs/', include_docs_urls(title='Backend API')),
     path(r'swagger-docs/', schema_view),
 ]

@@ -9,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 
 class User(AbstractUser):
     username = None
+    password = None
     email = models.EmailField(_('email address'), unique=True)
     profile = models.ImageField(upload_to='./issue_media', null=True)
 
@@ -27,7 +28,7 @@ class Project(models.Model):
     wiki = RichTextField()
     date = models.DateTimeField(auto_now_add=True )
     version = models.DecimalField(max_digits=4, decimal_places=2)
-    members = models.ManyToManyField(User, related_name='member_user', null=True, blank=True)
+    members = models.ManyToManyField(User, related_name='member_user')
 
     def __str__(self):
         return self.name

@@ -19,8 +19,6 @@ from django.urls import path, include, re_path
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('djrichtextfield/', include('djrichtextfield.urls')),
-    path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
-    re_path(r'^o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('backend/', include('backend.urls')),
     path('api-auth/', include('rest_framework.urls')),
 ]

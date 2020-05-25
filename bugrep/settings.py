@@ -25,7 +25,7 @@ SECRET_KEY = '&l32fvwhi8rt-sd^ikq2!y0+9_+2&9%+c8&(-n(v0um7^n32td'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -41,15 +41,17 @@ INSTALLED_APPS = [
     'rest_framework',
     'djrichtextfield',
     'taggit',
-    'oauth2_provider',
     'rest_framework_swagger',
     'coreapi',
-    # 'channels',
+    'channels',
+    'rest_framework.authtoken',
+    # 'knox',
 ]
 
 AUTH_USER_MODEL = 'backend.User'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -147,9 +149,11 @@ DJRICHTEXTFIELD_CONFIG = {
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-        'rest_framework.authentication.SessionAuthentication',
-        'rest_framework.authentication.BasicAuthentication',
+        # 'rest_framework.authentication.SessionAuthentication',
+        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.TokenAuthentication',
+        # 'knox.auth.TokenAuthentication'
     ),
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
+

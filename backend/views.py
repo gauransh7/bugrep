@@ -1,6 +1,6 @@
 from . import models, serializers
 from rest_framework import viewsets
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import AllowAny, IsAuthenticated
 from .permissions import IsOwnerAdminorReadOnly
 import requests
 from django.http import HttpResponse, JsonResponse
@@ -8,7 +8,9 @@ import json
 from .models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
-
+from django.shortcuts import render, redirect
+import datetime
+from rest_framework import generics
 
 class UserViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = models.User.objects.all()
@@ -38,10 +40,20 @@ class IssueViewSet(viewsets.ModelViewSet):
                 try:
                     return models.Issue.objects.filter(reported_user=self.kwargs['reported_user_pk'])
                 except KeyError:
-                    return models.Issue.objects.all()
+                    try:
+                        projects = models.Project.objects.filter(members=self.kwargs['members_pk'])
+                        if(len(projects)==0):
+                            return None
+                        issues = models.Issue.objects.all()
+                        for p in projects:
+                            issues = issues.filter(project=p)
+                        return issues
+                    except KeyError:
+                        return models.Issue.objects.all()
     queryset = models.Issue.objects.all()
     serializer_class = serializers.IssueSerializer
     permission_classes = [IsOwnerAdminorReadOnly]
+    # permission_classes = [AllowAny]
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -81,18 +93,31 @@ def get_user_data(request):
             name = user_data['person']['fullName'].split(" ", 1)
             first_name = name[0]
             last_name = name[1]
-            image = user_data['person']['displayPicture']
+            image = 'https://internet.channeli.in/'+user_data['person']['displayPicture']
             user = User(email=email, first_name=first_name, last_name=last_name, profile=image)
             user.save()
             status = 'new'
             # return HttpResponse("<h1>Saved Successfully</h1>")
+
         token, created = Token.objects.get_or_create(user=user)
-        return JsonResponse({
+
+        if not created:
+            token.save()
+
+        data = JsonResponse({
             'token': token.key,
             'user_id': user.pk,
             'email': user.email,
             'status': status
         })
+        return redirect('http://localhost:3000/token/?token='+token.key)
     except IndexError:
         return HttpResponse("<h1>You don't have access, Go Away!!</h1>")
+  
     
+class UserAPI(generics.RetrieveAPIView):
+    permission_classes = [IsAuthenticated,]
+    serializer_class = serializers.UserSerializer
+
+    def get_object(self):
+        return self.request.user

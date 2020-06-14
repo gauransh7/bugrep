@@ -30,6 +30,9 @@ assigned_users_router.register(r'assigned_issues', views.IssueViewSet, basename=
 reported_users_router = routers.NestedSimpleRouter(router, r'users', lookup='reported_user')
 reported_users_router.register(r'reported_issues', views.IssueViewSet, basename='users-reported_issues')
 
+your_issues_router = routers.NestedSimpleRouter(router, r'users', lookup='members')
+your_issues_router.register(r'your_issues', views.IssueViewSet, basename='users-your_issues')
+
 urlpatterns = [
     path('', include(router.urls)),
     path('', include(users_router.urls)),
@@ -37,6 +40,8 @@ urlpatterns = [
     path('', include(issues_router.urls)),
     path('', include(assigned_users_router.urls)),
     path('', include(reported_users_router.urls)),
+    path('', include(your_issues_router.urls)),
+    path('auth/user', views.UserAPI.as_view()),
     path('oauth_redirect/', views.get_user_data),
     path(r'docs/', include_docs_urls(title='Backend API')),
     path(r'swagger-docs/', schema_view),

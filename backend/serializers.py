@@ -1,5 +1,6 @@
-from rest_framework.serializers import ModelSerializer
+from rest_framework.serializers import ModelSerializer, ReadOnlyField
 from backend.models import User, Project, Issue, Comment
+from taggit_serializer.serializers import TagListSerializerField, TaggitSerializer
 
 
 class UserSerializer(ModelSerializer):
@@ -19,7 +20,12 @@ class ProjectSerializer(ModelSerializer):
         fields = '__all__'
 
 
-class IssueSerializer(ModelSerializer):
+class IssueSerializer(ModelSerializer, TaggitSerializer):
+    tags = TagListSerializerField()
+    project_name = ReadOnlyField()
+    reported_user_name = ReadOnlyField()
+    members = ReadOnlyField()
+
     def update(self, instance, validated_data):
         validated_data.pop('heading', None)
         validated_data.pop('reported_user', None)

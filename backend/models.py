@@ -11,7 +11,7 @@ class User(AbstractUser):
     username = None
     password = None
     email = models.EmailField(_('email address'), unique=True)
-    profile = models.ImageField(upload_to='./issue_media', null=True)
+    profile = models.URLField(null=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
@@ -20,6 +20,9 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.email
+    
+    class Meta:
+        ordering = ['first_name', 'last_name', 'pk']
 
 
 class Project(models.Model):
@@ -44,10 +47,33 @@ class Issue(models.Model):
     media = models.FileField(upload_to='./issue_media', null=True, blank=True)
     tags = TaggableManager()
     date = models.DateTimeField(auto_now_add=True )
-    status = models.BooleanField(default=True)
+    status = models.IntegerField(default=0)
 
     def __str__(self):
         return self.heading
+
+    def project_name(self):
+        return self.project.name
+
+    def reported_user_name(self):
+        if (self.reported_user != None):
+            return self.reported_user.first_name + " " + self.reported_user.last_name
+        else:
+            return None
+
+    def members(self):
+        members = []
+        for user in self.project.members.all():
+            member = {}
+            member['id'] = user.id
+            member['name'] = user.first_name + ' ' + user.last_name
+            member['profile'] = user.profile
+            members.append(member)
+        return members
+
+
+    class Meta:
+        ordering = ['-date', 'pk']
 
 
 class Comment(models.Model):

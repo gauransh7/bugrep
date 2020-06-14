@@ -1,4 +1,5 @@
 from rest_framework import permissions
+from . import models
 
 
 class IsOwnerAdminorReadOnly(permissions.BasePermission):
@@ -9,8 +10,11 @@ class IsOwnerAdminorReadOnly(permissions.BasePermission):
             return True
         
         try:
-            user = obj.assigned_user
-        except AttributeError:
+            if request.user in obj.project.members.all() or request.user == obj.project.user:
+                return True
+            user = obj.reported_user
+        except:
             user = obj.user
 
         return request.user == user
+        

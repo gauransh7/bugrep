@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'coreapi',
     'channels',
     'rest_framework.authtoken',
+    'taggit_serializer',
     # 'knox',
 ]
 
@@ -156,4 +157,6 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
 }
+
+CORS_ORIGIN_ALLOW_ALL = True
 

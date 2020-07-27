@@ -4,6 +4,16 @@ from taggit_serializer.serializers import TagListSerializerField, TaggitSerializ
 
 
 class UserSerializer(ModelSerializer):
+    no_of_projects = ReadOnlyField()
+    no_of_issues = ReadOnlyField()
+
+    def update(self, instance, validated_data):
+        validated_data.pop('email', None)
+        validated_data.pop('first_name', None)
+        validated_data.pop('last_name', None)
+        validated_data.pop('profile', None)
+        return super().update(instance, validated_data)
+
     class Meta:
         model = User
         # fields = ['id', 'email', 'first_name', 'last_name', 'is_active', 'is_staff', 'profile']
@@ -11,20 +21,25 @@ class UserSerializer(ModelSerializer):
 
 
 class ProjectSerializer(ModelSerializer):
+    members_detail = ReadOnlyField()
+    no_of_issues = ReadOnlyField()
+
     def update(self, instance, validated_data):
         validated_data.pop('user', None)
         validated_data.pop('date', None)
         return super().update(instance, validated_data)
+    
     class Meta:
         model = Project
         fields = '__all__'
 
 
-class IssueSerializer(ModelSerializer, TaggitSerializer):
-    tags = TagListSerializerField()
+class IssueSerializer(ModelSerializer):
     project_name = ReadOnlyField()
     reported_user_name = ReadOnlyField()
+    reported_user_profile = ReadOnlyField()
     members = ReadOnlyField()
+    no_of_comments = ReadOnlyField()
 
     def update(self, instance, validated_data):
         validated_data.pop('heading', None)
@@ -39,7 +54,7 @@ class IssueSerializer(ModelSerializer, TaggitSerializer):
         fields = '__all__'
 
 
-class CommentSerilizer(ModelSerializer):
+class CommentSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         validated_data.pop('user', None)
         validated_data.pop('issue', None)

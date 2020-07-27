@@ -4,8 +4,10 @@ import projectReducer from './projectReducer';
 import issueReducer from './issueReducer';
 import userReducer from './userReducer';
 import { combineReducers } from 'redux';
+import { connectRouter } from 'connected-react-router'
 
-const rootReducer = combineReducers({
+const rootReducer = (history) => combineReducers({
+    router: connectRouter(history),
     auth: authReducer,
     comment: commentReducer,
     project: projectReducer,

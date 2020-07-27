@@ -1,24 +1,28 @@
 import React from 'react';
 import { Drawer, Form, Button, Col, Row, Input, Select, Upload, InputNumber } from 'antd';
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
 import { Editor } from '@tinymce/tinymce-react';
 import { getUsers } from '../../store/actions/userActions';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { createProject } from '../../store/actions/projectActions';
+import Loader from '../../common/Loader';
 
 const { Option } = Select;
+const { Dragger } = Upload;
 
-const children = [];
-
-for (let i = 10; i < 36; i++) {
-    children.push(<Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>);
-}
+const props = {
+    name: 'logo',
+    multiple: false,
+};
 
 class CreateProject extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            visible: false
+            visible: false,
+            logo: null,
+            loading: false
         }
     }
 
@@ -43,8 +47,39 @@ class CreateProject extends React.Component {
         });
     };
 
+    handleUpload = (file) => {
+        this.setState({
+            logo: file.file
+        })
+    }
+
     handleSubmit = e => {
-        console.log(e)
+        console.log(e);
+        let form_data = new FormData();
+        form_data.append('name', e.name);
+        form_data.append('wiki', e.wiki.level.content);
+        form_data.append('version', e.version);
+        form_data.append('user', this.props.userId)
+        if (this.state.logo) {
+            form_data.append('logo', this.state.logo);
+        }
+        let userAppend = 1;
+        for (const val of e.members){
+            form_data.append('members', val);
+            if(val === this.props.userId){
+                userAppend = 0
+            }
+        }
+        if(userAppend){
+            form_data.append('members', this.props.userId);
+        }
+        this.setState({
+            loading: true
+        })
+        this.props.createProject(form_data);
+        this.setState({
+            logo: null
+        })
     }
 
     render() {
@@ -60,6 +95,7 @@ class CreateProject extends React.Component {
                     visible={this.state.visible}
                     bodyStyle={{ paddingBottom: 80 }}
                 >
+                    {this.state.loading?<Loader />:
                     <Form layout="vertical" onFinish={this.handleSubmit}>
                         <Row>
                             <Col span={24}>
@@ -126,7 +162,7 @@ class CreateProject extends React.Component {
                             <Col span={24}>
                                 <Form.Item
                                     name="members"
-                                    label="members"
+                                    label="Members"
                                     rules={[{ required: false }]}
                                 >
                                     <Select
@@ -139,10 +175,36 @@ class CreateProject extends React.Component {
                                         placeholder="Please select members"
                                         optionLabelProp="label"
                                     >
-                                        {this.props.users?this.props.users.map(user => {
+                                        {this.props.users?this.props.users.map((user, index) => {
                                             return <Option value={user.id} label={user.first_name + ' ' + user.last_name}>{user.first_name + ' ' + user.last_name}</Option>
                                         }):''}
                                     </Select>
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                <Form.Item
+                                    name="logo"
+                                    label="Logo"
+                                    rules={[
+                                        {
+                                            required: false
+                                        },
+                                    ]}
+                                >
+                                    <Dragger
+                                        style={{ width: "100%", padding: '0.5rem' }}
+                                        {...props}
+                                        beforeUpload={() => { return false; }}
+                                        onRemove={() => { this.setState({ logo: null }) }}
+                                        action={this.handleUpload}
+                                    >
+                                        <p className="ant-upload-drag-icon">
+                                            <InboxOutlined />
+                                        </p>
+                                        <p className="ant-upload-text">Click or drag file</p>
+                                    </Dragger>
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -158,7 +220,7 @@ class CreateProject extends React.Component {
                                 </Form.Item>
                             </Col>
                         </Row>
-                    </Form>
+                    </Form>}
                 </Drawer>
             </>
         );
@@ -166,7 +228,8 @@ class CreateProject extends React.Component {
 }
 
 const mapStateToProps = state => ({
-    users: state.user.users
+    users: state.user.users,
+    userId: state.auth.user.id
 })
 
-export default connect(mapStateToProps, { getUsers })(CreateProject);
+export default connect(mapStateToProps, { getUsers, createProject })(CreateProject);

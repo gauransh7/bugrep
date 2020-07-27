@@ -1,25 +1,40 @@
 import React from 'react';
-import { Row, Col, Tabs, Divider } from 'antd';
+import { Row, Col, Tabs, Button } from 'antd';
 import ProjectSider from '../projects/ProjectSider';
+import ProjectList from '../projects/ProjectList';
+import { getAllProjects, getMyProjects } from '../../store/actions/projectActions';
+import { connect } from 'react-redux';
+import CreateProject from '../projects/CreateProject';
 
 const { TabPane } = Tabs
-
-
+ 
 class Project extends React.Component {
+    componentDidMount() {
+        this.props.getAllProjects();
+        this.props.getMyProjects();
+    }
+
+    operations = (
+        <Row gutter={8}>
+            {/* <Col>
+                <Button>Extra Action</Button>
+            </Col> */}
+            <Col>    
+                <CreateProject />
+            </Col>
+        </Row>
+    );
+
     render() {
         return (
             <Row>
-                <Col sm={5}>
-                    <ProjectSider></ProjectSider>
-                </Col>
-                <Divider type='vertical' style={{ minHeight: '100vh' }} />
-                <Col sm={18}>
-                    <Tabs defaultActiveKey="1" style={{ margin: '2rem' }}>
-                        <TabPane tab="Detail" key="1">
-                            Content of Tab Pane 2
+                <Col span={22} style={{ margin:'1.5rem' }}>
+                    <Tabs tabBarExtraContent={this.operations}>
+                        <TabPane tab="All Projects" key="1">
+                            <ProjectList projects={this.props.allProjects}></ProjectList>
                         </TabPane>
-                        <TabPane tab="Comments" key="2">
-                            Content of Tab Pane 2
+                        <TabPane tab="My Projects" key="2">
+                            <ProjectList projects={this.props.myProjects}></ProjectList>
                         </TabPane>
                     </Tabs>
                 </Col>
@@ -28,4 +43,9 @@ class Project extends React.Component {
     }
 }
 
-export default Project;
+const mapStateToProps = state => ({
+    allProjects: state.project.allProjects,
+    myProjects: state.project.myProjects
+})
+
+export default connect(mapStateToProps, { getAllProjects, getMyProjects })(Project);

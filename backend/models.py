@@ -24,6 +24,12 @@ class User(AbstractUser):
     class Meta:
         ordering = ['first_name', 'last_name', 'pk']
 
+    def no_of_projects(self):
+        return len(Project.objects.filter(user=self))
+
+    def no_of_issues(self):
+        return len(Issue.objects.filter(reported_user=self))
+
 
 class Project(models.Model):
     user = models.ForeignKey(User, related_name='project_user', on_delete=models.CASCADE)
@@ -32,9 +38,27 @@ class Project(models.Model):
     date = models.DateTimeField(auto_now_add=True )
     version = models.DecimalField(max_digits=4, decimal_places=2)
     members = models.ManyToManyField(User, related_name='member_user')
+    logo = models.ImageField(upload_to='./project_media/logo', null=True)
 
     def __str__(self):
         return self.name
+
+    def no_of_issues(self):
+        length = len(Issue.objects.filter(project=self))
+        return length
+
+    def members_detail(self):
+        members = []
+        for user in self.members.all():
+            member = {}
+            member['id'] = user.id
+            member['name'] = user.first_name + ' ' + user.last_name
+            member['profile'] = user.profile
+            members.append(member)
+        return members
+
+    class Meta:
+        ordering = ['-pk']
 
 
 class Issue(models.Model):
@@ -45,9 +69,9 @@ class Issue(models.Model):
     heading = models.CharField(max_length=100 )
     description = RichTextField(blank=True, null=True )
     media = models.FileField(upload_to='./issue_media', null=True, blank=True)
-    tags = TaggableManager()
     date = models.DateTimeField(auto_now_add=True )
     status = models.IntegerField(default=0)
+    tags = models.CharField(max_length=200, null=True)
 
     def __str__(self):
         return self.heading
@@ -60,6 +84,15 @@ class Issue(models.Model):
             return self.reported_user.first_name + " " + self.reported_user.last_name
         else:
             return None
+    
+    def reported_user_profile(self):
+        if (self.reported_user != None):
+            return self.reported_user.profile
+        else:
+            return None
+
+    def no_of_comments(self):
+        return len(Comment.objects.filter(issue=self))
 
     def members(self):
         members = []
@@ -78,10 +111,12 @@ class Issue(models.Model):
 
 class Comment(models.Model):
     user = models.ForeignKey(User, related_name='comment_user', on_delete=models.SET_NULL, null=True )
+    reply = models.ForeignKey("self", null=True, on_delete=models.CASCADE)
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE )
     description = RichTextField()
     date = models.DateTimeField(auto_now_add=True )
-    likes = models.ManyToManyField(User, related_name='liked_user')
+    likes = models.ManyToManyField(User, related_name='liked_user', null=True, blank=True)
 
     def __str__(self):  # pylint: disable=invalid-str-returned
         return self.description  
+

@@ -53,14 +53,15 @@ class Home extends React.Component {
                     </Col>
                     <Divider type='vertical' style={{ minHeight: '100vh' }} />
                     <Col xs={0} sm={18}>
-                        <Tabs defaultActiveKey="1" onChange={callback} style={ { margin: '2rem' }}>
+                        {/* <Tabs defaultActiveKey="1" onChange={callback} style={ { margin: '2rem' }}>
                             <TabPane tab="Detail" key="1">
                                 {Object.keys(this.state.bug).length?<IssueDetail bug={this.state.bug} ></IssueDetail>:""}
                             </TabPane>
                             <TabPane tab="Comments" key="2">
                                 Content of Tab Pane 2
                             </TabPane>
-                        </Tabs>
+                        </Tabs> */}
+                        {Object.keys(this.state.bug).length ? <IssueDetail comments={true} bug={this.state.bug} ></IssueDetail> : ""}
                     </Col>
                 </Row>
             </>

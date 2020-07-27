@@ -1,5 +1,5 @@
 import React from 'react';
-import { Drawer, Form, Button, Col, Row, Input, Select, Upload } from 'antd';
+import { Drawer, Form, Button, Col, Row, Input, Select, Upload, message } from 'antd';
 import { PlusOutlined, InboxOutlined } from '@ant-design/icons';
 import { Editor } from '@tinymce/tinymce-react';
 import { connect } from 'react-redux';
@@ -43,27 +43,45 @@ class CreateIssue extends React.Component {
     };
 
     handleSubmit = e => {
-        console.log(e)
-        let tags = e.tags.split(' ')
+        // let tags = e.tags.split(' ')
+        let upload_size = 1;
+        let upload_type = 1
         let form_data = new FormData();
         form_data.append('heading', e.heading);
         form_data.append('project', e.project);
         form_data.append('description', e.description.level.content);
         if (e.media!=null){
+            if(e.media.file.size>100000000){
+                upload_size = 0;
+            }
+            console.log(e.media.file.type)
+            if (e.media.file.type !== 'image/jpg' && e.media.file.type !== 'image/jpeg' && e.media.file.type !== 'image/png' && e.media.file.type !== 'video/mp4'){
+                upload_type = 0;
+            }
             form_data.append('media', e.media.file, e.media.file.name);
         }
-        form_data.append('tags', JSON.stringify(tags));
+        // form_data.append("tags", JSON.stringify(tags));
+        form_data.append("tags", e.tags);
         for (var value of form_data.values()) {
             console.log(value);
         }
-        this.props.addIssue(form_data);
+        if(upload_size === 1 && upload_type === 1){
+            this.props.addIssue(form_data);
+        }
+        if(upload_type === 0) {
+            message.error('File not an image or video (jpg, jpeg, png, mp4)')
+        }
+        if(upload_size === 0) {
+            message.error('File should be less than 100 MB')
+        }
     }
 
     render() {
         return (
             <>
                 <Button type="primary" onClick={this.showDrawer}>
-                    <PlusOutlined /> Add Bug
+                    <PlusOutlined /> 
+                    { window.innerWidth > 430 ?"Add Bug":null}
                 </Button>
                 <Drawer
                     title="Add a New Bug"
@@ -93,26 +111,24 @@ class CreateIssue extends React.Component {
                                     name="project"
                                     label="Project"
                                     rules={[{ required: true }]}
+                                    initialValue={this.props.projectId}
                                 // value={this.state.project}s
                                 // onChange={this.handleChange}
                                 >
-                                    <Select
+                                    {!this.props.projectId?<Select
                                         showSearch
                                         style={{ width: '100%' }}
                                         placeholder="Select a Project"
                                         optionFilterProp="children"
-                                        // onChange={this.handleSelectChange}
-                                        // onFocus={onFocus}
-                                        // onBlur={onBlur}
-                                        // onSearch={onSearch}
                                         filterOption={(input, option) =>
                                             option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                         }
+                                        
                                     >
                                         {this.props.allProjects.map(project => (
-                                            <Option key={project.id} value={project.id}>{project.name}</Option>
+                                            <Option key={project.id} value={project.id}>{project.name+' '+project.version}</Option>
                                         ))}
-                                    </Select>
+                                    </Select> : this.props.allProjects.find(item => item.id === this.props.projectId).name +' '+ this.props.allProjects.find(item => item.id === this.props.projectId).version}
                                 </Form.Item>
                             </Col>
                         </Row>
@@ -147,14 +163,14 @@ class CreateIssue extends React.Component {
                                         init={{
                                             height: 200,
                                             width: '100%',
-                                            menubar: false,
+                                            menubar: true,
                                             plugins: [
                                                 'advlist autolink lists link image charmap print preview anchor',
                                                 'searchreplace visualblocks code fullscreen',
                                                 'insertdatetime media table paste code help wordcount'
                                             ],
                                             toolbar:
-                                                'undo redo | formatselect | bold italic backcolor | \
+                                                'formatselect | bold italic backcolor | \
                                                 alignleft aligncenter alignright alignjustify | \
                                                 bullist numlist outdent indent | removeformat | help'
                                         }}

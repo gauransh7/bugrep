@@ -14,7 +14,7 @@
     font-weight: 500;
 }
 
-body {
+no-scroll {
     overflow: hidden;
 }
 
@@ -28,4 +28,8 @@ div.scroll:hover {
 
 .ant-layout {
     background-color: white;
+}
+
+.ant-layout-sider-children {
+    position: fixed
 }

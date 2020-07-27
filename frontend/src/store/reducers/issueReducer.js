@@ -8,7 +8,7 @@ const issueReducer = (state = initState, action) => {
         case 'LATEST_ISSUES':
             return {
                 ...state,
-                latestIssues: action.payload,
+                latestIssues: action.payload.slice(0, 10),
             };
         case 'ADD_ISSUE':
             return {

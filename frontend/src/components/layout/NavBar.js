@@ -1,5 +1,5 @@
-import React from 'react'
-import { Link, NavLink } from 'react-router-dom';
+import React from 'react';
+import { Link } from 'react-router-dom';
 import { Layout, Menu, Row } from 'antd';
 import {
     FundProjectionScreenOutlined,
@@ -35,7 +35,15 @@ class NavBar extends React.Component {
 
     render() {
         return (
-            <Sider style={{ minHeight: '100vh' }} theme="light" collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}>
+            <Sider 
+                style={{
+                    overflow: 'hidden',
+                    minHeight: '100vh',
+                    position: 'sticky',
+                    // left: 0,
+                }}
+                theme="light" collapsible collapsed={this.state.collapsed} onCollapse={this.onCollapse}
+            >
                 <Row justify="center" style={ { margin: '1rem 0 5rem 0' }}>
                 <div className="logo"><img src="https://img.icons8.com/fluent/48/000000/bug.png" alt="logo"/></div>
                 </Row>
@@ -44,19 +52,16 @@ class NavBar extends React.Component {
                         <Link to="/" />Home
                     </Menu.Item>
                     <Menu.Item key="2" icon={<FundProjectionScreenOutlined />}>
-                        <NavLink to="/Projects">Projects</NavLink>
+                        <Link to="/Projects">Projects</Link>
                     </Menu.Item>
                     <Menu.Item key="3" icon={<BugOutlined />}>
-                        <Link to="/Bugs">Assigned Bugs</Link>
+                        <Link to="/AssignedBugs">Assigned Bugs</Link>
                     </Menu.Item>
-                    <Menu.Item key="4" icon={<FileDoneOutlined />}>
-                        <Link to="/Board">Board</Link>
-                        </Menu.Item>
                     <SubMenu key="sub1" icon={<UserOutlined />} title="User">
-                        <Menu.Item key="5" icon={<FrownOutlined />}><Link to="/My_Page">My Page (Admins)</Link></Menu.Item>
-                        <Menu.Item key="6" icon={<SettingOutlined />}><Link to="/Settings">Settings</Link></Menu.Item>
-                        <Menu.Item key="7" icon={<LogoutOutlined />}><Link to='/login' onClick={this.props.logout}>Logout</Link></Menu.Item>
+                        <Menu.Item key="5" icon={<FrownOutlined />}><Link to="/My_Page">My Page</Link></Menu.Item>
+                        <Menu.Item key="6" icon={<SettingOutlined />}><Link to="/Admin">Admin Page</Link></Menu.Item>
                     </SubMenu>
+                    <Menu.Item key="4" icon={<LogoutOutlined />}><Link to='/login' onClick={this.props.logout}>Logout</Link></Menu.Item>
                 </Menu>
             </Sider>
         );

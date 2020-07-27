@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { message } from 'antd';
+import { goBack, push } from 'connected-react-router';
 
 export const getLatestIssues = () => (dispatch, getState) => {
     const config = {
@@ -93,7 +94,9 @@ export const addIssue = (form_data) => (dispatch, getState) => {
                 type: 'ADD_ISSUE',
                 payload: response.data,
             });
+            dispatch(push('Bugs/'+response.data.id+'/'))
             dispatch(getLatestIssues());
+
             message.info('Added Successfully');
         })
         .catch(error => {
@@ -101,5 +104,29 @@ export const addIssue = (form_data) => (dispatch, getState) => {
             for (var value of form_data.values()) {
                 console.log(value);
             }
+        });
+}
+
+export const deleteIssue = (issueId) => (dispatch, getState) => {
+    const token = getState().auth.token;
+
+    const config = {
+        headers: {
+            'content-type': 'application/json'
+        }
+    }
+
+    if (token) {
+        config.headers['Authorization'] = `Token ${token}`;
+    }
+
+    axios.delete('http://127.0.0.1:8000/backend/issues/'+issueId+'/', config)
+        .then(() => {
+            dispatch(goBack());
+            dispatch(getLatestIssues());
+            message.info('Deleted Successfully');
+        })
+        .catch(error => {
+            console.log(error);
         });
 }

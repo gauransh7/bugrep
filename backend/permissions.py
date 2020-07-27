@@ -17,4 +17,12 @@ class IsOwnerAdminorReadOnly(permissions.BasePermission):
             user = obj.user
 
         return request.user == user
+
+class IsAdminorReadOnly(permissions.BasePermission):
+    def has_object_permission(self, request, view, obj):
+        if request.method in permissions.SAFE_METHODS:
+            return True
+        if request.user.is_superuser == True:
+            return True
+        return False
         

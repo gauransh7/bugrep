@@ -4,6 +4,8 @@ from rest_framework.routers import DefaultRouter
 from . import views
 from rest_framework.documentation import include_docs_urls
 from rest_framework_swagger.views import get_swagger_view
+from django.conf.urls.static import static
+from django.conf import settings
 
 schema_view = get_swagger_view(title='Backend API')
 
@@ -45,5 +47,6 @@ urlpatterns = [
     path('oauth_redirect/', views.get_user_data),
     path(r'docs/', include_docs_urls(title='Backend API')),
     path(r'swagger-docs/', schema_view),
-]
+] 
+
 

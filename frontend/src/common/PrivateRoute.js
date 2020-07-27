@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Route, Redirect } from 'react-router-dom';
-import { Spin, Space, Layout, Row } from 'antd';
+import Loader from './Loader';
 
-const { Content } = Layout;
 
 const PrivaterRoute = ({component: Component, auth, ...rest}) => {
     return (
@@ -12,15 +11,7 @@ const PrivaterRoute = ({component: Component, auth, ...rest}) => {
             render={props => {
                 if(auth.isLoading){
                     return (
-                        <Layout>
-                            <Content>
-                                <Row align="middle" justify="center" style={ { paddingTop: '10rem' }}>
-                                    <Space size="middle">
-                                        <Spin size="large" />
-                                    </Space>
-                                </Row>
-                            </Content>
-                        </Layout>
+                        <Loader />
                     )
                 } 
                 else if (!auth.isAuthenticated){

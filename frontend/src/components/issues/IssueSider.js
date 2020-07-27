@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import CreateIssue from '../issues/CreateIssue';
 import ReactTimeAgo from 'react-time-ago';
+import { Link } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 const { Option } = Select;
@@ -39,8 +40,13 @@ const Bug = ({heading, time, project, tags, status, bug, changeBug}) => {
             return <CheckCircleTwoTone twoToneColor="#52c41a" />
         }
     }
-    return (
+    let tagsList = []
+    if (tags != null) {
+        tagsList = tags.split(' ');
+    }
+    return ( 
         <div onClick={() => {changeBug({bug})}} style={{ cursor: 'pointer'}}>
+            <Link to={window.innerWidth<575?'/Bugs/' + bug.id + '/':''}>
             <Row  justify = { 'space-between'} >
                 <Col>
                     <Status></Status>
@@ -55,9 +61,10 @@ const Bug = ({heading, time, project, tags, status, bug, changeBug}) => {
             </Row >
             <Descriptions style={{ margin: '2rem 0 0 0' }} column={1}>
                 <Descriptions.Item label='Project'>{project}</Descriptions.Item>
-                <Descriptions.Item label='Tags'>{tags.map(tag => (tag+' '))}</Descriptions.Item>
+                <Descriptions.Item label='Tags'>{tagsList.map(tag => (tag+' '))}</Descriptions.Item>
             </Descriptions>
             <Divider dashed />
+            </Link>
         </div>
     )
 }
@@ -77,6 +84,16 @@ class IssueSider extends React.Component {
         })
     }
 
+    bugStatus = () => {
+        if(this.state.bugStatus==0){
+            return "Open"
+        } else if(this.state.bugStatus==1){
+            return "In Progress"
+        } else if(this.state.bugStatus==2){
+            return "Done"
+        }
+    }
+
     render() {
         return (
             <>
@@ -90,24 +107,23 @@ class IssueSider extends React.Component {
                         <CreateIssue></CreateIssue>
                     </Col>
                 </Row>
-                <Row style={{ margin: '2rem 1rem' }} justify={'space-around'} align={"middle"}>
+                <Row 
+                    // style={{ margin: '2rem 1rem' }} 
+                    justify={'center'} align={"middle"}
+                >
                     <Col>
                         <Dropdown overlay={CategoryMenu(this.changeCategory)} trigger={['click']}>
                             <Button>
-                                Category <DownOutlined />
+                                {this.state.bugStatus!==null?this.bugStatus():"All Issues"} <DownOutlined />
                             </Button>
                         </Dropdown>
                     </Col>
                     <Col>
-                        <Select
+                        {/* <Select
                             showSearch
                             style={{ width: 110 }}
                             placeholder="Project"
                             optionFilterProp="children"
-                            // onChange={onChange}
-                            // onFocus={onFocus}
-                            // onBlur={onBlur}
-                            // onSearch={onSearch}
                             filterOption={(input, option) =>
                                 option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
@@ -115,7 +131,7 @@ class IssueSider extends React.Component {
                             <Option value="jack">Jack</Option>
                             <Option value="lucy">Lucy</Option>
                             <Option value="tom">Tom</Option>
-                        </Select>
+                        </Select> */}
                     </Col>
                 </Row>
                 <Divider />
@@ -130,7 +146,8 @@ class IssueSider extends React.Component {
                     this.props.bugs.map(bug => 
                         {
                             if (this.state.bugStatus === null){
-                                return (
+                            return (
+                                    // window.innerwidth < 575? <Link to={'Bugs/'+bug.id+'/'}>:{null}
                                     <Bug
                                         changeBug={this.props.changeBug}
                                         heading={bug.heading}
@@ -141,6 +158,7 @@ class IssueSider extends React.Component {
                                         key={bug.id}
                                         bug={bug}
                                     />
+                                    // window.innerwidth < {575} ? </Link>:null
                                 );
                             }
                             else {

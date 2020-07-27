@@ -1,7 +1,7 @@
 from . import models, serializers
 from rest_framework import viewsets
 from rest_framework.permissions import AllowAny, IsAuthenticated
-from .permissions import IsOwnerAdminorReadOnly
+from .permissions import IsOwnerAdminorReadOnly, IsAdminorReadOnly
 import requests
 from django.http import HttpResponse, JsonResponse
 import json
@@ -11,10 +11,14 @@ from rest_framework.response import Response
 from django.shortcuts import render, redirect
 import datetime
 from rest_framework import generics
+from itertools import chain
+from django.core.mail import send_mail
+from .models import User
 
-class UserViewSet(viewsets.ReadOnlyModelViewSet):
+class UserViewSet(viewsets.ModelViewSet):
     queryset = models.User.objects.all()
     serializer_class = serializers.UserSerializer
+    permission_classes = [IsAdminorReadOnly]
     # permission_classes = [AllowAny]
 
 
@@ -27,6 +31,16 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = models.Project.objects.all()
     serializer_class = serializers.ProjectSerializer
     permission_classes = [IsOwnerAdminorReadOnly]
+    # permission_classes = [AllowAny]
+
+    def create(self, request):
+        send_mail(
+            'New Project for testing',
+            request.data['name'] + ' is up for testing. \nReport the bugs to BugRep. \n',
+            User.objects.get(pk=request.data['user']).email,
+            list(map(lambda x: x.email, User.objects.all())),
+        )
+        return super().create(request)
 
 
 class IssueViewSet(viewsets.ModelViewSet):
@@ -45,9 +59,14 @@ class IssueViewSet(viewsets.ModelViewSet):
                         if(len(projects)==0):
                             return None
                         issues = models.Issue.objects.all()
+                        final = {}
                         for p in projects:
-                            issues = issues.filter(project=p)
-                        return issues
+                            add = issues.filter(project=p)
+                            final = sorted(
+                                chain(final, add),
+                                key = lambda instance: instance.id
+                            )
+                        return reversed(final)
                     except KeyError:
                         return models.Issue.objects.all()
     queryset = models.Issue.objects.all()
@@ -63,7 +82,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         except KeyError:
             return models.Comment.objects.all()
     queryset = models.Comment.objects.all()
-    serializer_class = serializers.CommentSerilizer
+    serializer_class = serializers.CommentSerializer
     permission_classes = [IsOwnerAdminorReadOnly]
 
 

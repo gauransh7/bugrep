@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { Redirect } from 'react-router-dom';
 
 export const loadUser = () => (dispatch, getState) => {
     dispatch({ type: 'USER_LOADING'});
@@ -21,6 +22,7 @@ export const loadUser = () => (dispatch, getState) => {
                 type: 'USER_LOADED',
                 payload: response.data,
             });
+            
         })
         .catch(error => {
             console.log(error);

@@ -17,7 +17,7 @@ class ProjectSider extends React.Component {
     render() {
         return (
             <>
-            <Row style={{ margin: '2rem 1rem' }} align="middle" justify={'space-around'}>
+            <Row style={{ margin: '2rem 1rem' }} align="middle" justify={'space-between'}>
                 <Col>
                     <Title level={3} style={{ margin: 0 }}>
                         Projects

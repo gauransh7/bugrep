@@ -1,13 +1,13 @@
 # bugrep
 BugRep makes your life easier by providing a platform for tracking bugs easily.
 
-#### Front-end(bugtracker) is build with :
+#### Front-end is build with :
 
 - [React](https://reactjs.org/)
 - [Redux](https://redux.js.org/)
 
 
-#### Back-end(imgsummer2020) is build with :
+#### Back-end is build with :
 
 - [Django](https://www.djangoproject.com/)
 - [Django REST framework](https://www.django-rest-framework.org/)

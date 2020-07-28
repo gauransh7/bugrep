@@ -24,11 +24,9 @@ BugRep makes your life easier by providing a platform for tracking bugs easily.
     
 1. Activate the virtual environment
 
-1. Create a PostgreSql database named bugrep.
-      
-    ```
-    For installing PostgreSql: https://www.postgresql.org/download/
-    ```
+1. Create a PostgreSql database named bugrep
+
+    - For installing PostgreSql: https://www.postgresql.org/download/
 
 1. Run the following command to install all the required dependencies:
 

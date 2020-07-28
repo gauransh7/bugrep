@@ -32,7 +32,7 @@ BugRep makes your life easier by providing a platform for tracking bugs easily.
     pip install -r requirements.txt
     ```
 
-1.  Inside folder /imgsummer2020/imgsummer2020 create a file .env and store the following credentials inside it:
+1.  Inside folder ./bugrep create a file .env and store the following credentials inside it:
 
     ```
     SECRET_KEY=your-secret-key

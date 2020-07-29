@@ -1,2 +1,9 @@
+<<<<<<< HEAD
 # dependencies
 /prakharenv
+=======
+.vscode/*
+.DS_Store
+bugrep/.env
+media/*
+>>>>>>> upstream/master

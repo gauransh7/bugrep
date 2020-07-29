@@ -60,8 +60,8 @@ class CreateProject extends React.Component {
         form_data.append('wiki', e.wiki.level.content);
         form_data.append('version', e.version);
         form_data.append('user', this.props.userId)
-        if (this.state.logo) {
-            form_data.append('logo', this.state.logo);
+        if (e.logo.file) {
+            form_data.append('logo', e.logo.file, e.logo.file.name);
         }
         let userAppend = 1;
         for (const val of e.members){

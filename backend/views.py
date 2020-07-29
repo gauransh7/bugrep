@@ -112,7 +112,7 @@ def get_user_data(request):
             name = user_data['person']['fullName'].split(" ", 1)
             first_name = name[0]
             last_name = name[1]
-            image = 'https://internet.channeli.in/'+user_data['person']['displayPicture']
+            image = user_data['person']['displayPicture']
             user = User(email=email, first_name=first_name, last_name=last_name, profile=image)
             user.save()
             status = 'new'

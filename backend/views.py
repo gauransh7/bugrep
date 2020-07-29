@@ -31,7 +31,6 @@ class ProjectViewSet(viewsets.ModelViewSet):
     queryset = models.Project.objects.all()
     serializer_class = serializers.ProjectSerializer
     permission_classes = [IsOwnerAdminorReadOnly]
-    # permission_classes = [AllowAny]
 
     def create(self, request):
         send_mail(
